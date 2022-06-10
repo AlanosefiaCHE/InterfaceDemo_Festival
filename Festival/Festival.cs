@@ -2,14 +2,16 @@
 
 namespace MyApp;
 
-public class Festival
+public class Festival : IPlannable
 {
     public List<Optreden> Optredens { get; }
     public FestivalMap Map { get; }
+    public FestivalManager Manager{ get; }
     public Festival()
     {
         Optredens = new List<Optreden>();
         Map = new FestivalMap();
+        Manager = new FestivalManager();
         InitLocaties();
     }
     public bool AnnuleerOptreden(Optreden optreden)
@@ -38,4 +40,15 @@ public class Festival
         return Map.GetMap();
     }
 
+    public DateTime Begin { get; set; }
+    public DateTime End { get; set; }
+    public void Start()
+    {
+        Manager.Start();
+    }
+
+    public void Stop()
+    {
+        Manager.Stop();
+    }
 }

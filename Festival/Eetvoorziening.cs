@@ -1,43 +1,19 @@
-﻿using System.Text;
+﻿namespace MyApp;
 
-namespace MyApp;
-
-public class Eetvoorziening : ILocatable
+public class Eetvoorziening : Voorziening, IPlannable
 {
     public string Locatie { get; set; }
     public string Omschrijving { get; set; }
 
-}
-
-public interface ILocatable
-{
-    string Locatie { get; set; }
-    string Omschrijving { get; set; }
-}
-
-public class FestivalMap
-{
-    public List<ILocatable> Locaties { get; }
-
-    public FestivalMap()
+    public DateTime Begin { get; set; }
+    public DateTime End { get; set; }
+    public void Start()
     {
-        Locaties = new List<ILocatable>();
+        throw new NotImplementedException();
     }
 
-    public void Add(ILocatable loc)
+    public void Stop()
     {
-        Locaties.Add(loc);
+        throw new NotImplementedException();
     }
-
-    public string GetMap()
-    {
-        var sb = new StringBuilder();
-        foreach (var loc in Locaties)
-        {
-            sb.AppendLine($"{loc.Omschrijving}: {loc.Locatie}");
-        }
-
-        return sb.ToString();
-    }
-    
 }
