@@ -5,35 +5,63 @@ public class FestivalManager
     public FestivalManager()
     {
         Plannables = new List<IPlannable>();
-        
+        cancellation = new CancellationTokenSource();
     }
 
-    private List<IPlannable> Plannables { get; }
-    private List<Voorziening> Voorzieningen { get; }
 
-    public void Start()
+    private CancellationTokenSource cancellation;
+    private List<IPlannable> Plannables { get; }
+
+    public async Task Start()
     {
-        foreach (var plannable in Plannables)
+        await Task.WhenAll(BeginPlannables(), EndPlannables());
+    }
+
+    private DateTime _programStart = DateTime.Now;
+    private const int ffFactor = 50000;
+    private DateTime Now()
+    {
+        // return fast forward time
+        return _programStart.AddSeconds((DateTime.Now - _programStart).TotalSeconds * ffFactor); // multiply to fastforward
+    }
+
+    private async Task BeginPlannables()
+    {
+        foreach (var plannable in Plannables.OrderBy(x => x.Begin))
         {
+            int delay = Math.Max(0, (int)(plannable.Begin - Now()).TotalMilliseconds / ffFactor);
+            await Task.Delay(delay, cancellation.Token);
+            if (cancellation.IsCancellationRequested)
+            {
+                break;
+            }
             plannable.Start();
         }
-        OpenVoorzieningen();
     }
 
-    public void OpenVoorzieningen()
+    private async Task EndPlannables()
     {
-        foreach (var voorziening in Voorzieningen)
+        foreach (var plannable in Plannables.OrderBy(x => x.End))
         {
-            if (voorziening is IPlannable)
+            int delay = Math.Max(0, (int)(plannable.End - Now()).TotalMilliseconds / ffFactor);
+            await Task.Delay(delay, cancellation.Token);
+            if (cancellation.IsCancellationRequested)
             {
-                (voorziening as IPlannable)!.Start();
+                break;
             }
+            plannable.Stop();
         }
+    }
+
+    public void Add(IPlannable plannable)
+    {
+        Plannables.Add(plannable);
     }
 
     public void Stop()
     {
-        foreach (var plannable in Plannables)
+        cancellation.Cancel();
+        foreach(var plannable in Plannables)
         {
             plannable.Stop();
         }

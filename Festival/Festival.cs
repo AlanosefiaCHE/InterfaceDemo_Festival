@@ -7,31 +7,29 @@ public class Festival : IPlannable
     public List<Optreden> Optredens { get; }
     public FestivalMap Map { get; }
     public FestivalManager Manager{ get; }
-    public Festival()
+    public Festival(DateTime begin, DateTime end)
     {
+        Begin = begin;
+        End = end;
         Optredens = new List<Optreden>();
         Map = new FestivalMap();
         Manager = new FestivalManager();
-        InitLocaties();
     }
-    public bool AnnuleerOptreden(Optreden optreden)
+    public void AnnuleerOptreden(string artiest)
     {
-        return true;
+        Optreden? optreden = Optredens.Where(optreden => optreden.Artiest == artiest).FirstOrDefault();
+        if(optreden != null)
+        {
+            optreden.Stop(); // als ie bezig is, moet ie stoppen
+            Optredens.Remove(optreden);
+        }
     }
 
-    private void InitLocaties()
-    {
-        var snackbar = new Eetvoorziening() {Locatie = "A1", Omschrijving = "Patat"};
-        var hamburgerTent = new Eetvoorziening() {Locatie = "B5", Omschrijving = "Burgers"};
-        var sushiTent = new Eetvoorziening() {Locatie = "C3", Omschrijving = "sushi"};
-        Map.Add(snackbar);
-        Map.Add(hamburgerTent);
-        Map.Add(sushiTent);
-    }
     public Optreden Book(string artiest, string podium, DateTime start)
     {
         var optreden = new Optreden(artiest, podium, start);
         Optredens.Add(optreden);
+        Manager.Add(optreden);
         return optreden;
     }
 
@@ -42,13 +40,20 @@ public class Festival : IPlannable
 
     public DateTime Begin { get; set; }
     public DateTime End { get; set; }
-    public void Start()
+    public async Task Start()
     {
-        Manager.Start();
+        Console.WriteLine("Festival start!");
+        await Manager.Start();
     }
 
     public void Stop()
     {
+        Console.WriteLine("Festival stopt!");
         Manager.Stop();
+    }
+
+    void IPlannable.Start()
+    {
+        _ = this.Start();
     }
 }

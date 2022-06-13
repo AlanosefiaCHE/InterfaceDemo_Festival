@@ -2,18 +2,16 @@
 
 public class Eetvoorziening : Voorziening, IPlannable
 {
-    public string Locatie { get; set; }
-    public string Omschrijving { get; set; }
 
     public DateTime Begin { get; set; }
     public DateTime End { get; set; }
     public void Start()
     {
-        throw new NotImplementedException();
+        Console.WriteLine($"{DateTime.Now.ToShortDateString()} om {DateTime.Now.ToShortTimeString()}, gepland {Begin.ToShortDateString()} om {Begin.ToShortTimeString()}: eetvoorziening {Omschrijving} start nu (locatie: '{Locatie}')");
     }
 
     public void Stop()
     {
-        throw new NotImplementedException();
+        Console.WriteLine($"{DateTime.Now.ToShortDateString()} om {DateTime.Now.ToShortTimeString()}, gepland {End.ToShortDateString()} om {End.ToShortTimeString()}: eetvoorziening {Omschrijving} stopt nu (locatie: '{Locatie}')");
     }
 }
