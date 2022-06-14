@@ -1,6 +1,10 @@
 ﻿namespace MyApp;
 
-public class HamburgerTent : Eetvoorziening
+public class IjsTent : Eetvoorziening
 {
-
+    public override void Start()
+    {
+        base.Start();
+        Console.WriteLine("Luik open.");
+    }
 }

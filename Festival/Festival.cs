@@ -18,6 +18,10 @@ public class Festival : IPlannable
     public void AnnuleerOptreden(string artiest)
     {
         Optreden? optreden = Optredens.Where(optreden => optreden.Artiest == artiest).FirstOrDefault();
+        if (optreden == null)
+        {
+            throw new InvalidOperationException("Optreden bestaat niet");
+        }
         if(optreden != null)
         {
             optreden.Stop(); // als ie bezig is, moet ie stoppen
